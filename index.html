@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1318">
+<title>Zona e volantinaggio</title>
+<style>
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-layer{position:absolute;left:0;top:0}
+.leaflet-container{overflow:hidden;touch-action:none;-webkit-tap-highlight-color:transparent}
+.leaflet-tile,.leaflet-marker-icon{user-select:none;-webkit-user-drag:none}
+.leaflet-tile{visibility:hidden}.leaflet-tile-loaded{visibility:inherit}
+.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-pane{z-index:400}
+.leaflet-map-pane svg{z-index:200}.leaflet-map-pane canvas{z-index:100}
+.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}
+.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-tile{max-width:none!important;max-height:none!important;width:auto;padding:0}
+.leaflet-zoom-animated{transform-origin:0 0}
+.leaflet-zoom-anim .leaflet-zoom-animated{transition:transform .25s cubic-bezier(0,0,.25,1)}
+.leaflet-zoom-anim .leaflet-tile,.leaflet-pan-anim .leaflet-tile{transition:none}
+.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:grab}
+.leaflet-overlay-pane svg path{pointer-events:none}.leaflet-overlay-pane svg path.leaflet-interactive{pointer-events:visiblePainted}
+</style>
+<style>
+:root{--bg:#0e1318;--card:#18202a;--line:#2a3542;--tx:#e9eef3;--mu:#8b98a8;--ac:#38bdf8;--g:#22c55e;--y:#eab308;--r:#ef4444}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:16px/1.35 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overscroll-behavior:none}
+#app{height:100%;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top)}
+.view{flex:1;min-height:0;display:none;position:relative;overflow:auto}
+.view.on{display:block}
+#v-map{overflow:hidden}
+#map{position:absolute;inset:0;background:#cfd8dc}
+.dm .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}
+nav{display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;padding:9px 0 8px;background:none;border:0;color:var(--mu);font:inherit;font-size:12px}
+nav button b{display:block;font-size:21px;font-weight:400;line-height:1.2}
+nav button.on{color:var(--ac)}
+#tools{position:absolute;right:10px;top:10px;z-index:1100;display:flex;flex-direction:column;gap:8px}
+.tb{width:54px;height:54px;border-radius:14px;background:var(--card);border:1px solid var(--line);color:var(--tx);font-size:21px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 2px 8px #0006}
+.tb span{font-size:10px;color:var(--mu)}
+.tb.act{background:var(--ac);border-color:var(--ac)}.tb.act span{color:#04202e}
+#leg{position:absolute;left:10px;top:10px;z-index:1100;background:#0e1318d9;border-radius:10px;padding:6px 9px;font-size:12px;line-height:1.5}
+#leg small{display:block;color:var(--mu);font-size:10px}
+#bar{position:absolute;left:10px;right:10px;bottom:12px;z-index:1100;display:none;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 4px 16px #0008}
+#bar .row{display:flex;gap:8px}
+button.b,#bar button{flex:1;min-height:46px;border-radius:12px;border:1px solid var(--line);background:#222c38;color:var(--tx);font:inherit;font-weight:600}
+button.p{background:var(--ac);border-color:var(--ac);color:#04202e}
+button.d{background:none;border-color:var(--r);color:var(--r)}
+#bd{position:fixed;inset:0;background:#000a;z-index:1900;display:none}
+#sheet{position:fixed;left:0;right:0;bottom:0;max-height:90%;overflow:auto;z-index:2000;display:none;background:var(--card);border-radius:20px 20px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px #000a}
+.grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
+h3{margin:0 0 12px;font-size:19px}
+.f{margin-bottom:12px}
+.f label{display:block;font-size:13px;color:var(--mu);margin-bottom:4px}
+input,textarea,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font:inherit}
+textarea{resize:vertical}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:9px 13px;border-radius:20px;border:1px solid var(--line);background:none;color:var(--tx);font:inherit;font-size:14px}
+.chip.on{background:var(--ac);border-color:var(--ac);color:#04202e;font-weight:600}
+.btns{display:flex;gap:8px;margin-top:6px}
+.btns+.btns{margin-top:8px}
+.pin{width:36px;height:36px;border-radius:50% 50% 50% 8px;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 6px #0007}
+.pin i{transform:rotate(45deg);font-style:normal;font-size:17px}
+.lh{position:sticky;top:0;background:var(--bg);padding:12px;z-index:5;border-bottom:1px solid var(--line)}
+.lh .chips{margin:10px 0 8px;flex-wrap:nowrap;overflow-x:auto}
+.chip{white-space:nowrap}
+.it{display:flex;gap:12px;align-items:center;padding:12px;border-bottom:1px solid var(--line)}
+.ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
+.tx{flex:1;min-width:0}
+.tx b,.tx small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tx small{color:var(--mu);font-size:13px}
+.call{width:46px;height:46px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:20px;flex:none}
+.empty{padding:40px 20px;text-align:center;color:var(--mu)}
+.pad{padding:16px}
+.stat{display:flex;gap:8px;margin-bottom:16px}
+.stat div{flex:1;background:var(--card);border-radius:14px;padding:12px;text-align:center;font-size:12px;color:var(--mu)}
+.stat b{display:block;font-size:24px;color:var(--tx)}
+.pad .b{display:block;width:100%;margin-bottom:10px}
+.pad p{color:var(--mu);font-size:13px;margin:0 0 16px}
+#toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);background:#fff;color:#111;padding:10px 16px;border-radius:20px;font-size:14px;z-index:3000;display:none;max-width:90%}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="v-map" class="view on">
+    <div id="map"></div>
+    <div id="leg">🟢 Completato<br>🟡 In corso<br>🔴 Da fare<small>© OpenStreetMap</small></div>
+    <div id="tools">
+      <button class="tb" id="loc">🧭<span>GPS</span></button>
+      <button class="tb" data-m="pin">📌<span>Pin</span></button>
+      <button class="tb" data-m="zone">🔲<span>Zona</span></button>
+      <button class="tb" data-m="line">〰️<span>Via</span></button>
+      <button class="tb" data-m="area">⬠<span>Area</span></button>
+    </div>
+    <div id="bar">
+      <span id="hint"></span>
+      <div class="row">
+        <button id="gps">📍 Qui (GPS)</button>
+        <button id="undo">↶ Annulla punto</button>
+        <button id="done" class="p">Fine</button>
+        <button id="x">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="v-list" class="view">
+    <div class="lh">
+      <input id="q" type="search" placeholder="Cerca nome, via, telefono…">
+      <div class="chips" data-g="flt">
+        <button class="chip on" data-v="all">Tutti</button>
+        <button class="chip" data-v="contatto">👤 Contatti</button>
+        <button class="chip" data-v="vendesi">🏷️ Vendesi</button>
+        <button class="chip" data-v="sfizio">🏗️ Cantieri</button>
+        <button class="chip" data-v="nota">📝 Note</button>
+        <button class="chip" data-v="via">🛣️ Vie e aree</button>
+      </div>
+      <select id="dt"><option value="0">Qualsiasi data</option><option value="1">Oggi</option><option value="7">Ultimi 7 giorni</option><option value="30">Ultimi 30 giorni</option></select>
+    </div>
+    <div id="items"></div>
+  </div>
+
+  <div id="v-data" class="view">
+    <div class="pad">
+      <div class="stat" id="stat"></div>
+      <button class="b p" id="ex-json">Esporta tutto (JSON)</button>
+      <button class="b" id="ex-csv">Esporta contatti e pin (CSV)</button>
+      <button class="b" id="im">Importa JSON</button>
+      <input type="file" id="file" accept=".json,application/json" hidden>
+      <p>Il JSON contiene tutto: zona, vie, aree e pin. Il CSV contiene solo i pin, pronto per un CRM o un foglio di calcolo. I dati restano in questo browser: esporta ogni tanto per avere un backup.</p>
+      <button class="b" id="dmb">Mappa scura: no</button>
+      <button class="b d" id="wipe">Cancella tutti i dati</button>
+    </div>
+  </div>
+
+  <nav>
+    <button data-v="map" class="on"><b>🗺️</b>Mappa</button>
+    <button data-v="list"><b>📋</b>Lista</button>
+    <button data-v="data"><b>💾</b>Dati</button>
+  </nav>
+</div>
+<div id="bd"></div>
+<div id="sheet"></div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+const KEY='zona_volantinaggio_v1';
+let db={zone:null,tracks:[],pins:[],dark:false};
+try{const s=localStorage.getItem(KEY);if(s)db=Object.assign(db,JSON.parse(s))}catch(e){}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt=i=>i?new Date(i).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+const TYPES={contatto:{ic:'👤',n:'Contatto',c:'#38bdf8'},vendesi:{ic:'🏷️',n:'Vendesi',c:'#f97316'},sfizio:{ic:'🏗️',n:'Cantiere',c:'#a78bfa'},nota:{ic:'📝',n:'Nota',c:'#94a3b8'}};
+const ST={todo:{n:'Da fare',ic:'🔴',c:'#ef4444'},doing:{n:'In corso',ic:'🟡',c:'#eab308'},done:{n:'Completato',ic:'🟢',c:'#22c55e'}};
+const SHOW={contatto:['nome','cognome','tel','ind','note'],vendesi:['ind','ven','tel','note'],sfizio:['ind','note'],nota:['note']};
+const PH={contatto:'Cosa vi siete detti, interessi, quando richiamare…',vendesi:'Prezzo, mq, piano, nome agenzia, telefono sul cartello, cosa hai notato…',sfizio:'Che lavori sono, quanto durano, chi è il proprietario…',nota:'Es. portinaio collaborativo, cane aggressivo, cancello chiuso…'};
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){toast('Memoria piena: esporta i dati e svuota')}}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)}
+
+/* ---------- MAPPA ---------- */
+const map=L.map('map',{zoomControl:false,attributionControl:false}).setView([45.4064,11.8768],16);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+const trkG=L.layerGroup().addTo(map),zoneG=L.layerGroup().addTo(map),pinG=L.layerGroup().addTo(map);
+let mode=null,dp=[],tmp=null;
+
+function hit(fn){return e=>{if(mode)return;L.DomEvent.stop(e);fn()}}
+function render(){
+  zoneG.clearLayers();trkG.clearLayers();pinG.clearLayers();
+  if(db.zone)L.polygon(db.zone,{color:'#38bdf8',weight:3,dashArray:'10 6',fillOpacity:.04,interactive:false}).addTo(zoneG);
+  db.tracks.forEach(t=>{
+    const s=ST[t.status],todo=t.status==='todo';
+    const o={color:s.c,weight:t.kind==='line'?6:3,opacity:.95,dashArray:todo?'8 8':null};
+    const l=t.kind==='line'?L.polyline(t.pts,o):L.polygon(t.pts,Object.assign(o,{fillColor:s.c,fillOpacity:todo?.08:.3}));
+    l.on('click',hit(()=>trackForm(t))).addTo(trkG);
+  });
+  db.pins.forEach(p=>{
+    const T=TYPES[p.type];
+    L.marker([p.lat,p.lng],{icon:L.divIcon({className:'',html:'<div class="pin" style="background:'+T.c+'"><i>'+T.ic+'</i></div>',iconSize:[36,36],iconAnchor:[18,34]})})
+      .on('click',hit(()=>pinForm(p))).addTo(pinG);
+  });
+}
+function setMode(m){
+  mode=(m===mode)?null:m;dp=[];
+  if(tmp){map.removeLayer(tmp);tmp=null}
+  $('#bar').style.display=mode?'flex':'none';
+  document.querySelectorAll('.tb[data-m]').forEach(b=>b.classList.toggle('act',b.dataset.m===mode));
+  if(mode){
+    $('#hint').textContent={zone:'Tocca i punti del confine della tua zona',line:'Tocca i punti lungo la via che hai fatto',area:'Tocca gli angoli dell’area o del condominio',pin:'Tocca la mappa dove mettere il pin'}[mode];
+    const pin=mode==='pin';
+    $('#undo').style.display=pin?'none':'';$('#done').style.display=pin?'none':'';$('#gps').style.display=pin?'':'none';
+  }
+}
+function drawTmp(){
+  if(tmp)map.removeLayer(tmp);
+  if(!dp.length){tmp=null;return}
+  const c=mode==='zone'?'#38bdf8':'#fff',o={color:c,weight:4,fillOpacity:.1,interactive:false};
+  tmp=L.layerGroup([mode==='line'?L.polyline(dp,o):L.polygon(dp,o)].concat(dp.map(p=>L.circleMarker(p,{radius:6,color:c,fillColor:'#000',fillOpacity:1,interactive:false})))).addTo(map);
+}
+map.on('click',e=>{
+  if(!mode)return;
+  if(mode==='pin'){pinForm({lat:e.latlng.lat,lng:e.latlng.lng});return}
+  dp.push([e.latlng.lat,e.latlng.lng]);drawTmp();
+});
+document.querySelectorAll('.tb[data-m]').forEach(b=>b.onclick=()=>{
+  if(b.dataset.m==='zone'&&db.zone&&mode!=='zone'){zoneSheet();return}
+  if(mode&&mode!==b.dataset.m){mode=null}
+  setMode(b.dataset.m);
+});
+$('#x').onclick=()=>{mode=null;setMode(null)};
+$('#undo').onclick=()=>{dp.pop();drawTmp()};
+$('#done').onclick=()=>{
+  const min=mode==='line'?2:3;
+  if(dp.length<min)return toast('Servono almeno '+min+' punti');
+  if(mode==='zone'){db.zone=dp.slice();save();const m=mode;mode=null;setMode(null);render();toast('Zona salvata');return}
+  trackForm({kind:mode,pts:dp.slice(),status:'done',name:''});
+};
+$('#gps').onclick=()=>{
+  if(!navigator.geolocation)return toast('GPS non disponibile');
+  navigator.geolocation.getCurrentPosition(p=>pinForm({lat:p.coords.latitude,lng:p.coords.longitude}),()=>toast('Posizione non disponibile: controlla i permessi'),{enableHighAccuracy:true,timeout:15000});
+};
+
+/* ---------- GPS LIVE ---------- */
+let wid=null,me=null,acc=null;
+function stopLoc(){if(wid!=null)navigator.geolocation.clearWatch(wid);wid=null;if(me){map.removeLayer(me);map.removeLayer(acc);me=acc=null}$('#loc').classList.remove('act')}
+$('#loc').onclick=()=>{
+  if(wid!=null){stopLoc();return}
+  if(!navigator.geolocation)return toast('GPS non disponibile');
+  let first=true;$('#loc').classList.add('act');
+  wid=navigator.geolocation.watchPosition(p=>{
+    const ll=[p.coords.latitude,p.coords.longitude];
+    if(!me){
+      acc=L.circle(ll,{radius:p.coords.accuracy,color:'#38bdf8',weight:1,fillOpacity:.12,interactive:false}).addTo(map);
+      me=L.circleMarker(ll,{radius:9,color:'#fff',weight:3,fillColor:'#38bdf8',fillOpacity:1,interactive:false}).addTo(map);
+    }else{me.setLatLng(ll);acc.setLatLng(ll);acc.setRadius(p.coords.accuracy)}
+    if(first){map.setView(ll,18);first=false}
+  },()=>{toast('Posizione non disponibile: controlla i permessi GPS');stopLoc()},{enableHighAccuracy:true,maximumAge:5000,timeout:20000});
+};
+
+/* ---------- SCHEDE ---------- */
+function openSheet(h){$('#sheet').innerHTML='<div class="grab"></div>'+h;$('#sheet').style.display='block';$('#bd').style.display='block';$('#sheet').scrollTop=0}
+function closeSheet(){$('#sheet').style.display='none';$('#bd').style.display='none'}
+$('#bd').onclick=closeSheet;
+const chips=(g,o,cur)=>'<div class="chips" data-g="'+g+'">'+Object.keys(o).map(k=>'<button class="chip'+(k===cur?' on':'')+'" data-v="'+k+'">'+o[k].ic+' '+o[k].n+'</button>').join('')+'</div>';
+const gv=g=>{const x=document.querySelector('#sheet [data-g='+g+'] .on');return x?x.dataset.v:null};
+document.addEventListener('click',e=>{
+  const c=e.target.closest('.chip');if(!c||!c.parentNode.dataset.g)return;
+  [].forEach.call(c.parentNode.children,x=>x.classList.toggle('on',x===c));
+  const g=c.parentNode.dataset.g;
+  if(g==='type')showFields();if(g==='flt')renderList();
+});
+function showFields(){
+  const t=gv('type'),ok=SHOW[t];
+  document.querySelectorAll('#sheet .f').forEach(f=>f.style.display=ok.indexOf(f.dataset.k)>-1?'':'none');
+  $('#f_note').placeholder=PH[t];
+}
+function goMap(lat,lng){closeSheet();go('map');map.setView([lat,lng],18)}
+
+function pinForm(p){
+  const t=p.type||'contatto';
+  const inp=(k,l,extra)=>'<div class="f" data-k="'+k+'"><label>'+l+'</label><input id="f_'+k+'" value="'+esc(p[k])+'" '+(extra||'')+'></div>';
+  openSheet(
+    '<h3>'+(p.id?'Modifica pin':'Nuovo pin')+'</h3>'+
+    chips('type',TYPES,t)+
+    inp('nome','Nome')+inp('cognome','Cognome')+
+    inp('tel','Telefono','type="tel" inputmode="tel"')+
+    inp('ind','Indirizzo e civico')+
+    '<div class="f" data-k="ven"><label>Chi vende</label><select id="f_ven"><option value="">—</option><option'+(p.ven==='Privato'?' selected':'')+'>Privato</option><option'+(p.ven==='Agenzia concorrente'?' selected':'')+'>Agenzia concorrente</option></select></div>'+
+    '<div class="f" data-k="note"><label>Note</label><textarea id="f_note" rows="6">'+esc(p.note)+'</textarea></div>'+
+    '<div class="btns"><button class="b p" id="s-ok">Salva</button></div>'+
+    '<div class="btns">'+(p.id?'<button class="b" id="s-map">Vedi sulla mappa</button><button class="b d" id="s-del">Elimina</button>':'<button class="b" id="s-no">Annulla</button>')+'</div>'
+  );
+  showFields();
+  $('#s-ok').onclick=()=>{
+    const o=Object.assign({},p,{type:gv('type')});
+    ['nome','cognome','tel','ind','note'].forEach(k=>o[k]=$('#f_'+k).value.trim());
+    o.ven=$('#f_ven').value;
+    if(p.id)db.pins=db.pins.map(x=>x.id===p.id?o:x);
+    else{o.id=uid();o.created=new Date().toISOString();db.pins.push(o)}
+    save();closeSheet();if(mode)setMode(mode);render();renderList();toast('Pin salvato');
+  };
+  if(p.id){
+    $('#s-map').onclick=()=>goMap(p.lat,p.lng);
+    $('#s-del').onclick=()=>{if(confirm('Eliminare questo pin?')){db.pins=db.pins.filter(x=>x.id!==p.id);save();closeSheet();render();renderList()}};
+  }else $('#s-no').onclick=closeSheet;
+}
+
+function trackForm(t){
+  const nw=!t.id,kn=t.kind==='line'?'Via':'Area';
+  openSheet(
+    '<h3>'+(nw?'Nuova '+kn.toLowerCase():kn)+'</h3>'+
+    '<div class="f"><label>Nome (via, civico, condominio)</label><input id="f_name" value="'+esc(t.name)+'"></div>'+
+    '<div class="f"><label>Stato</label>'+chips('status',ST,t.status)+'</div>'+
+    (nw?'':'<p style="color:var(--mu);margin:0 0 12px">Ultimo passaggio: '+fmt(t.last)+'</p>')+
+    '<div class="btns"><button class="b p" id="s-ok">Salva</button></div>'+
+    '<div class="btns">'+(nw?'<button class="b" id="s-no">Annulla</button>':'<button class="b" id="s-now">Passaggio adesso</button><button class="b" id="s-map">Vedi</button><button class="b d" id="s-del">Elimina</button>')+'</div>'
+  );
+  const put=(now)=>{
+    const st=gv('status'),o=Object.assign({},t,{name:$('#f_name').value.trim(),status:st});
+    if(nw||now||st!==t.status)o.last=new Date().toISOString();
+    if(nw){o.id=uid();db.tracks.push(o)}else db.tracks=db.tracks.map(x=>x.id===t.id?o:x);
+    save();closeSheet();if(nw){mode=null;setMode(null)}render();renderList();toast(now?'Passaggio registrato':'Salvato');
+  };
+  $('#s-ok').onclick=()=>put(false);
+  if(nw)$('#s-no').onclick=closeSheet;
+  else{
+    $('#s-now').onclick=()=>put(true);
+    $('#s-map').onclick=()=>{closeSheet();go('map');map.fitBounds(L.polyline(t.pts).getBounds(),{padding:[40,40]})};
+    $('#s-del').onclick=()=>{if(confirm('Eliminare?')){db.tracks=db.tracks.filter(x=>x.id!==t.id);save();closeSheet();render();renderList()}};
+  }
+}
+function zoneSheet(){
+  openSheet('<h3>Zona di competenza</h3><div class="btns"><button class="b" id="z-go">Inquadra la zona</button></div><div class="btns"><button class="b" id="z-re">Ridisegna</button><button class="b d" id="z-del">Elimina</button></div>');
+  $('#z-go').onclick=()=>{closeSheet();map.fitBounds(L.polygon(db.zone).getBounds(),{padding:[30,30]})};
+  $('#z-re').onclick=()=>{closeSheet();db.zone=null;save();render();mode=null;setMode('zone')};
+  $('#z-del').onclick=()=>{if(confirm('Eliminare la zona?')){db.zone=null;save();closeSheet();render()}};
+}
+
+/* ---------- LISTA ---------- */
+function items(){
+  const out=[];
+  db.pins.forEach(p=>out.push({k:'pin',o:p,type:p.type,d:p.created,hay:[p.nome,p.cognome,p.tel,p.ind,p.note,p.ven].join(' ')}));
+  db.tracks.forEach(t=>out.push({k:'trk',o:t,type:'via',d:t.last,hay:[t.name,ST[t.status].n].join(' ')}));
+  return out.sort((a,b)=>(b.d||'').localeCompare(a.d||''));
+}
+function renderList(){
+  const q=$('#q').value.trim().toLowerCase(),f=document.querySelector('[data-g=flt] .on').dataset.v,days=+$('#dt').value;
+  const since=days===0?0:(days===1?new Date().setHours(0,0,0,0):Date.now()-days*864e5);
+  const L2=items().filter(i=>(f==='all'||i.type===f)&&(!q||i.hay.toLowerCase().indexOf(q)>-1)&&(!since||new Date(i.d).getTime()>=since));
+  $('#items').innerHTML=L2.length?L2.map(i=>{
+    const o=i.o;let ic,col,ti,su;
+    if(i.k==='pin'){const T=TYPES[o.type];ic=T.ic;col=T.c;ti=[o.nome,o.cognome].join(' ').trim()||o.ind||T.n;su=(o.nome||o.cognome)?o.ind||o.note:o.note}
+    else{const s=ST[o.status];ic=o.kind==='line'?'🛣️':'⬠';col=s.c;ti=o.name||(o.kind==='line'?'Via senza nome':'Area senza nome');su=s.n}
+    return '<div class="it" data-k="'+i.k+'" data-id="'+o.id+'"><div class="ico" style="background:'+col+'33">'+ic+'</div><div class="tx"><b>'+esc(ti)+'</b><small>'+esc(su)+'</small><small>'+fmt(i.d)+'</small></div>'+(o.tel?'<a class="call" href="tel:'+esc(o.tel.replace(/[^\d+]/g,''))+'">📞</a>':'')+'</div>';
+  }).join(''):'<div class="empty">Nessun risultato. Aggiungi pin o vie dalla mappa.</div>';
+}
+$('#items').onclick=e=>{
+  if(e.target.closest('a'))return;
+  const r=e.target.closest('.it');if(!r)return;
+  if(r.dataset.k==='pin')pinForm(db.pins.find(x=>x.id===r.dataset.id));
+  else trackForm(db.tracks.find(x=>x.id===r.dataset.id));
+};
+$('#q').oninput=renderList;$('#dt').onchange=renderList;
+
+/* ---------- DATI ---------- */
+function renderData(){
+  $('#stat').innerHTML='<div><b>'+db.pins.filter(p=>p.type==='contatto').length+'</b>contatti</div><div><b>'+db.pins.length+'</b>pin</div><div><b>'+db.tracks.length+'</b>vie e aree</div>';
+  $('#dmb').textContent='Mappa scura: '+(db.dark?'sì':'no');
+}
+function dl(name,txt,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:mime}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
+const stamp=()=>new Date().toISOString().slice(0,10);
+$('#ex-json').onclick=()=>dl('zona-backup-'+stamp()+'.json',JSON.stringify(db,null,1),'application/json');
+$('#ex-csv').onclick=()=>{
+  const cols=['tipo','nome','cognome','telefono','indirizzo','venditore','note','lat','lng','data'];
+  const c=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+  const rows=db.pins.map(p=>[TYPES[p.type].n,p.nome,p.cognome,p.tel,p.ind,p.ven,p.note,p.lat,p.lng,p.created].map(c).join(','));
+  dl('pin-'+stamp()+'.csv','\ufeff'+cols.join(',')+'\n'+rows.join('\n'),'text/csv');
+};
+$('#im').onclick=()=>$('#file').click();
+$('#file').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const d=JSON.parse(r.result);
+    if(!Array.isArray(d.pins)||!Array.isArray(d.tracks))throw 0;
+    if(!confirm('Sostituire i dati attuali con quelli del file?'))return;
+    db=Object.assign({zone:null,tracks:[],pins:[],dark:false},d);save();render();renderData();applyDark();toast('Dati importati')
+  }catch(x){toast('File non valido')}};
+  r.readAsText(f);e.target.value='';
+};
+function applyDark(){document.body.classList.toggle('dm',!!db.dark)}
+$('#dmb').onclick=()=>{db.dark=!db.dark;save();applyDark();renderData()};
+$('#wipe').onclick=()=>{if(confirm('Cancellare TUTTI i dati? Esporta prima un backup.')){db={zone:null,tracks:[],pins:[],dark:db.dark};save();render();renderData();toast('Dati cancellati')}};
+
+/* ---------- NAVIGAZIONE ---------- */
+function go(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  if(v==='map')setTimeout(()=>map.invalidateSize(),50);
+  if(v==='list')renderList();if(v==='data')renderData();
+}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+
+applyDark();render();
+if(db.zone)map.fitBounds(L.polygon(db.zone).getBounds(),{padding:[30,30]});
+else if(db.pins.length)map.setView([db.pins[0].lat,db.pins[0].lng],16);
+</script>
+</body>
+</html>
