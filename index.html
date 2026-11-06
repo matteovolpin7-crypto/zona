@@ -5,21 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0e1318">
 <title>Zona e volantinaggio</title>
-<style>
-.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-layer{position:absolute;left:0;top:0}
-.leaflet-container{overflow:hidden;touch-action:none;-webkit-tap-highlight-color:transparent}
-.leaflet-tile,.leaflet-marker-icon{user-select:none;-webkit-user-drag:none}
-.leaflet-tile{visibility:hidden}.leaflet-tile-loaded{visibility:inherit}
-.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-pane{z-index:400}
-.leaflet-map-pane svg{z-index:200}.leaflet-map-pane canvas{z-index:100}
-.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}
-.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-tile{max-width:none!important;max-height:none!important;width:auto;padding:0}
-.leaflet-zoom-animated{transform-origin:0 0}
-.leaflet-zoom-anim .leaflet-zoom-animated{transition:transform .25s cubic-bezier(0,0,.25,1)}
-.leaflet-zoom-anim .leaflet-tile,.leaflet-pan-anim .leaflet-tile{transition:none}
-.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:grab}
-.leaflet-overlay-pane svg path{pointer-events:none}.leaflet-overlay-pane svg path.leaflet-interactive{pointer-events:visiblePainted}
-</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <style>
 :root{--bg:#0e1318;--card:#18202a;--line:#2a3542;--tx:#e9eef3;--mu:#8b98a8;--ac:#38bdf8;--g:#22c55e;--y:#eab308;--r:#ef4444}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -29,53 +15,54 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--tx);font:16px/1.
 .view.on{display:block}
 #v-map{overflow:hidden}
 #map{position:absolute;inset:0;background:#cfd8dc}
-.dm .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}
+body.dm:not(.sat) .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.95) contrast(.9)}
 nav{display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;padding:9px 0 8px;background:none;border:0;color:var(--mu);font:inherit;font-size:12px}
-nav button b{display:block;font-size:21px;font-weight:400;line-height:1.2}
+nav button{flex:1;padding:8px 0 7px;background:none;border:0;color:var(--mu);font:inherit;font-size:12px}
+nav button b{display:block;font-size:20px;font-weight:400;line-height:1.2}
 nav button.on{color:var(--ac)}
 #tools{position:absolute;right:10px;top:10px;z-index:1100;display:flex;flex-direction:column;gap:8px}
-.tb{width:54px;height:54px;border-radius:14px;background:var(--card);border:1px solid var(--line);color:var(--tx);font-size:21px;line-height:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;box-shadow:0 2px 8px #0006}
-.tb span{font-size:10px;color:var(--mu)}
-.tb.act{background:var(--ac);border-color:var(--ac)}.tb.act span{color:#04202e}
-#leg{position:absolute;left:10px;top:10px;z-index:1100;background:#0e1318d9;border-radius:10px;padding:6px 9px;font-size:12px;line-height:1.5}
-#leg small{display:block;color:var(--mu);font-size:10px}
+.tb{width:46px;height:46px;border-radius:13px;background:var(--card);border:1px solid var(--line);color:var(--tx);font-size:21px;box-shadow:0 2px 8px #0006}
+.tb.act{background:var(--ac);border-color:var(--ac)}
+#leg{position:absolute;left:10px;top:10px;z-index:1100;background:#0e1318d9;border-radius:10px;padding:5px 9px;font-size:11px;line-height:1.5}
 #bar{position:absolute;left:10px;right:10px;bottom:12px;z-index:1100;display:none;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px;box-shadow:0 4px 16px #0008}
 #bar .row{display:flex;gap:8px}
 button.b,#bar button{flex:1;min-height:46px;border-radius:12px;border:1px solid var(--line);background:#222c38;color:var(--tx);font:inherit;font-weight:600}
 button.p{background:var(--ac);border-color:var(--ac);color:#04202e}
 button.d{background:none;border-color:var(--r);color:var(--r)}
 #bd{position:fixed;inset:0;background:#000a;z-index:1900;display:none}
-#sheet{position:fixed;left:0;right:0;bottom:0;max-height:90%;overflow:auto;z-index:2000;display:none;background:var(--card);border-radius:20px 20px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px #000a}
+#sheet{position:fixed;left:0;right:0;bottom:0;max-height:92%;overflow:auto;z-index:2000;display:none;background:var(--card);border-radius:20px 20px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -6px 24px #000a}
 .grab{width:44px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 12px}
 h3{margin:0 0 12px;font-size:19px}
 .f{margin-bottom:12px}
 .f label{display:block;font-size:13px;color:var(--mu);margin-bottom:4px}
 input,textarea,select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--tx);font:inherit}
-textarea{resize:vertical}
+.r3{display:flex;gap:8px;margin-bottom:12px}.r3>*{flex:1;min-width:0}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
-.chip{padding:9px 13px;border-radius:20px;border:1px solid var(--line);background:none;color:var(--tx);font:inherit;font-size:14px}
+.chip{padding:9px 13px;border-radius:20px;border:1px solid var(--line);background:none;color:var(--tx);font:inherit;font-size:14px;white-space:nowrap}
 .chip.on{background:var(--ac);border-color:var(--ac);color:#04202e;font-weight:600}
-.btns{display:flex;gap:8px;margin-top:6px}
-.btns+.btns{margin-top:8px}
+.btns{display:flex;gap:8px;margin-top:6px}.btns+.btns{margin-top:8px}
 .pin{width:36px;height:36px;border-radius:50% 50% 50% 8px;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 2px 6px #0007}
 .pin i{transform:rotate(45deg);font-style:normal;font-size:17px}
 .lh{position:sticky;top:0;background:var(--bg);padding:12px;z-index:5;border-bottom:1px solid var(--line)}
 .lh .chips{margin:10px 0 8px;flex-wrap:nowrap;overflow-x:auto}
-.chip{white-space:nowrap}
 .it{display:flex;gap:12px;align-items:center;padding:12px;border-bottom:1px solid var(--line)}
 .ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex:none}
 .tx{flex:1;min-width:0}
 .tx b,.tx small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tx small{color:var(--mu);font-size:13px}
 .call{width:46px;height:46px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:20px;flex:none}
+.bar{height:6px;background:var(--line);border-radius:3px;margin:5px 0}.bar i{display:block;height:100%;border-radius:3px}
 .empty{padding:40px 20px;text-align:center;color:var(--mu)}
-.pad{padding:16px}
+.pad{padding:16px}.pad .b{display:block;width:100%;margin-bottom:10px}
+.pad p,.sum{color:var(--mu);font-size:13px;margin:0 0 14px}
+.sum{background:var(--bg);border-radius:12px;padding:10px;font-size:14px;color:var(--tx)}
 .stat{display:flex;gap:8px;margin-bottom:16px}
 .stat div{flex:1;background:var(--card);border-radius:14px;padding:12px;text-align:center;font-size:12px;color:var(--mu)}
 .stat b{display:block;font-size:24px;color:var(--tx)}
-.pad .b{display:block;width:100%;margin-bottom:10px}
-.pad p{color:var(--mu);font-size:13px;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px}
+.cv{padding:10px 0;border-radius:10px;border:1px solid var(--line);background:none;color:var(--tx);font:inherit;font-size:14px}
+.cv.on{background:var(--g);border-color:var(--g);color:#052e13;font-weight:700}
+.nt{padding:8px 0;border-top:1px solid var(--line)}.nt small{color:var(--mu);margin-left:6px}.nt span{display:block;color:var(--mu);font-size:14px}
 #toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translateX(-50%);background:#fff;color:#111;padding:10px 16px;border-radius:20px;font-size:14px;z-index:3000;display:none;max-width:90%}
 </style>
 </head>
@@ -83,23 +70,22 @@ textarea{resize:vertical}
 <div id="app">
   <div id="v-map" class="view on">
     <div id="map"></div>
-    <div id="leg">🟢 Completato<br>🟡 In corso<br>🔴 Da fare<small>© OpenStreetMap</small></div>
+    <div id="leg">🟢 Fatta · 🟡 In corso · 🔴 Da fare<br><span id="att" style="color:var(--mu)"></span></div>
     <div id="tools">
-      <button class="tb" id="loc">🧭<span>GPS</span></button>
-      <button class="tb" data-m="pin">📌<span>Pin</span></button>
-      <button class="tb" data-m="zone">🔲<span>Zona</span></button>
-      <button class="tb" data-m="line">〰️<span>Via</span></button>
-      <button class="tb" data-m="area">⬠<span>Area</span></button>
+      <button class="tb" id="loc" title="GPS">🧭</button>
+      <button class="tb" data-m="pin" title="Pin">📌</button>
+      <button class="tb" data-m="zone" title="Zona">🔲</button>
+      <button class="tb" id="satb" title="Satellite">🛰️</button>
     </div>
     <div id="bar">
       <span id="hint"></span>
-      <div class="row">
-        <button id="gps">📍 Qui (GPS)</button>
-        <button id="undo">↶ Annulla punto</button>
-        <button id="done" class="p">Fine</button>
-        <button id="x">✕</button>
-      </div>
+      <div class="row"><button id="gps">📍 Qui (GPS)</button><button id="undo">↶ Annulla punto</button><button id="done" class="p">Fine</button><button id="x">✕</button></div>
     </div>
+  </div>
+
+  <div id="v-vie" class="view">
+    <div class="lh"><button class="b p" id="newvia" style="width:100%">+ Nuova via</button></div>
+    <div id="vie"></div>
   </div>
 
   <div id="v-list" class="view">
@@ -111,9 +97,9 @@ textarea{resize:vertical}
         <button class="chip" data-v="vendesi">🏷️ Vendesi</button>
         <button class="chip" data-v="sfizio">🏗️ Cantieri</button>
         <button class="chip" data-v="nota">📝 Note</button>
-        <button class="chip" data-v="via">🛣️ Vie e aree</button>
+        <button class="chip" data-v="app">💬 Appunti</button>
       </div>
-      <select id="dt"><option value="0">Qualsiasi data</option><option value="1">Oggi</option><option value="7">Ultimi 7 giorni</option><option value="30">Ultimi 30 giorni</option></select>
+      <div class="r3" style="margin:0"><select id="dt"><option value="0">Qualsiasi data</option><option value="1">Oggi</option><option value="7">Ultimi 7 giorni</option><option value="30">Ultimi 30 giorni</option></select><button class="b p" id="newapp" style="flex:none;padding:0 14px">+ Appunto</button></div>
     </div>
     <div id="items"></div>
   </div>
@@ -125,16 +111,22 @@ textarea{resize:vertical}
       <button class="b" id="ex-csv">Esporta contatti e pin (CSV)</button>
       <button class="b" id="im">Importa JSON</button>
       <input type="file" id="file" accept=".json,application/json" hidden>
-      <p>Il JSON contiene tutto: zona, vie, aree e pin. Il CSV contiene solo i pin, pronto per un CRM o un foglio di calcolo. I dati restano in questo browser: esporta ogni tanto per avere un backup.</p>
-      <button class="b" id="dmb">Mappa scura: no</button>
-      <button class="b d" id="wipe">Cancella tutti i dati</button>
+      <button class="b" id="dmb"></button>
+      <h3 style="margin-top:20px">Sincronizzazione</h3>
+      <p id="syn"></p>
+      <div class="f"><textarea id="cfg" rows="4" placeholder="Incolla qui il blocco firebaseConfig"></textarea></div>
+      <div class="f"><input id="cod" placeholder="Codice segreto (uguale su tutti i dispositivi)" autocapitalize="off"></div>
+      <button class="b p" id="syc">Collega</button>
+      <button class="b" id="syx">Scollega questo dispositivo</button>
+      <button class="b d" id="wipe" style="margin-top:20px">Cancella tutti i dati</button>
     </div>
   </div>
 
   <nav>
     <button data-v="map" class="on"><b>🗺️</b>Mappa</button>
+    <button data-v="vie"><b>🛣️</b>Vie</button>
     <button data-v="list"><b>📋</b>Lista</button>
-    <button data-v="data"><b>💾</b>Dati</button>
+    <button data-v="data"><b>⚙️</b>Dati</button>
   </nav>
 </div>
 <div id="bd"></div>
@@ -142,51 +134,107 @@ textarea{resize:vertical}
 <div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script>
-const $=s=>document.querySelector(s);
-const KEY='zona_volantinaggio_v1';
-let db={zone:null,tracks:[],pins:[],dark:false};
-try{const s=localStorage.getItem(KEY);if(s)db=Object.assign(db,JSON.parse(s))}catch(e){}
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const K='zona_volantinaggio_v1',SK='zona_sync_v1';
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const fmt=i=>i?new Date(i).toLocaleString('it-IT',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+const live=a=>a.filter(x=>!x.del);
 const TYPES={contatto:{ic:'👤',n:'Contatto',c:'#38bdf8'},vendesi:{ic:'🏷️',n:'Vendesi',c:'#f97316'},sfizio:{ic:'🏗️',n:'Cantiere',c:'#a78bfa'},nota:{ic:'📝',n:'Nota',c:'#94a3b8'}};
-const ST={todo:{n:'Da fare',ic:'🔴',c:'#ef4444'},doing:{n:'In corso',ic:'🟡',c:'#eab308'},done:{n:'Completato',ic:'🟢',c:'#22c55e'}};
+const ST={todo:{n:'Da fare',ic:'🔴',c:'#ef4444'},doing:{n:'In corso',ic:'🟡',c:'#eab308'},done:{n:'Fatta',ic:'🟢',c:'#22c55e'}};
+const ESI={parlato:{ic:'💬',n:'Parlato'},interessato:{ic:'⭐',n:'Interessato'},richiamare:{ic:'📞',n:'Richiamare'},no:{ic:'🚫',n:'Non interessato'}};
 const SHOW={contatto:['nome','cognome','tel','ind','note'],vendesi:['ind','ven','tel','note'],sfizio:['ind','note'],nota:['note']};
-const PH={contatto:'Cosa vi siete detti, interessi, quando richiamare…',vendesi:'Prezzo, mq, piano, nome agenzia, telefono sul cartello, cosa hai notato…',sfizio:'Che lavori sono, quanto durano, chi è il proprietario…',nota:'Es. portinaio collaborativo, cane aggressivo, cancello chiuso…'};
+const PH={contatto:'Cosa vi siete detti, interessi, quando richiamare…',vendesi:'Prezzo, mq, piano, agenzia, telefono sul cartello…',sfizio:'Che lavori sono, quanto durano, chi è il proprietario…',nota:'Es. portinaio collaborativo, cane aggressivo, cancello chiuso…'};
 
-function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch(e){toast('Memoria piena: esporta i dati e svuota')}}
+/* ---------- DATI ---------- */
+let db;
+function mig(d){
+  d=Object.assign({zone:null,pins:[],vie:[],app:[],dark:false,sat:false},d);
+  if(Array.isArray(d.zone))d.zone={id:'zona',pts:d.zone,u:1};
+  (d.tracks||[]).forEach(t=>d.vie.push({id:t.id,name:t.name||'Via',st:t.status,last:t.last,shape:{kind:t.kind,pts:t.pts},done:{},lato:'t',u:1}));
+  delete d.tracks;
+  d.pins.forEach(p=>p.u=p.u||1);
+  d.vie.forEach(v=>{v.u=v.u||1;v.done=v.done||{};v.lato=v.lato||'t'});
+  return d;
+}
+try{db=mig(JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){db=mig({})}
+const all=()=>[].concat(db.pins.map(o=>['pin',o]),db.vie.map(o=>['via',o]),db.app.map(o=>['app',o]),db.zone?[['zona',db.zone]]:[]);
+function save(){try{localStorage.setItem(K,JSON.stringify(db))}catch(e){toast('Memoria piena: esporta i dati')}}
+function put(t,o){o.u=Date.now();save();push(t,o)}
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)}
+
+/* ---------- SINCRONIZZAZIONE ---------- */
+let col=null,syn='non attiva',ss=null;
+try{ss=JSON.parse(localStorage.getItem(SK)||'null')}catch(e){}
+const ARR={pin:'pins',via:'vie',app:'app'};
+function push(t,o){if(col)col.doc(o.id).set({t:t,u:o.u,j:JSON.stringify(o)}).catch(()=>{syn='errore di invio';renderData()})}
+function apply(t,r){
+  if(t==='zona'){if(db.zone&&db.zone.u>=r.u)return false;db.zone=r;return true}
+  const a=db[ARR[t]];if(!a)return false;
+  const i=a.findIndex(x=>x.id===r.id);
+  if(i>-1){if(a[i].u>=r.u)return false;a[i]=r}else a.push(r);
+  return true;
+}
+function conn(){
+  if(!ss)return;
+  if(typeof firebase==='undefined'){syn='non raggiungibile (serve internet)';return}
+  try{
+    if(!firebase.apps.length)firebase.initializeApp(ss.cfg);
+    const fs=firebase.firestore();
+    fs.enablePersistence({synchronizeTabs:true}).catch(()=>{});
+    col=fs.collection('spazi').doc(ss.code).collection('dati');
+    let first=true;
+    col.onSnapshot(sn=>{
+      let ch=false;const rem={};
+      sn.forEach(d=>{const x=d.data(),r=JSON.parse(x.j);rem[r.id]=r;if(apply(x.t,r))ch=true});
+      if(first&&!sn.metadata.fromCache){first=false;all().forEach(([t,o])=>{const r=rem[o.id];if(!r||o.u>r.u)push(t,o)})}
+      if(ch){save();render();renderVie();renderList()}
+      syn='attiva';renderData();
+    },e=>{syn='errore: '+(e.code||e.message);renderData()});
+  }catch(e){syn='errore: '+e.message}
+}
+function parseCfg(s){const o={};s.replace(/["']?(\w+)["']?\s*:\s*["']([^"']+)["']/g,(m,k,v)=>{o[k]=v});return o}
+$('#syc').onclick=()=>{
+  const cfg=parseCfg($('#cfg').value),code=$('#cod').value.trim().toLowerCase().replace(/[^a-z0-9_-]/g,'');
+  if(!cfg.apiKey||!cfg.projectId||!cfg.appId)return toast('Configurazione non valida: incolla tutto il blocco');
+  if(code.length<8)return toast('Codice troppo corto: almeno 8 caratteri (lettere e numeri)');
+  localStorage.setItem(SK,JSON.stringify({cfg:cfg,code:code}));location.reload();
+};
+$('#syx').onclick=()=>{if(confirm('Scollegare questo dispositivo? I dati restano qui e online.')){localStorage.removeItem(SK);location.reload()}};
 
 /* ---------- MAPPA ---------- */
 const map=L.map('map',{zoomControl:false,attributionControl:false}).setView([45.4064,11.8768],16);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19});
+const esri='https://server.arcgisonline.com/ArcGIS/rest/services/';
+const sat=L.layerGroup([L.tileLayer(esri+'World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19}),L.tileLayer(esri+'Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',{maxZoom:19})]);
+function base(){map.removeLayer(osm);map.removeLayer(sat);(db.sat?sat:osm).addTo(map);document.body.classList.toggle('sat',!!db.sat);$('#att').textContent=db.sat?'© Esri, Maxar':'© OpenStreetMap';$('#satb').classList.toggle('act',!!db.sat)}
+$('#satb').onclick=()=>{db.sat=!db.sat;save();base()};
 const trkG=L.layerGroup().addTo(map),zoneG=L.layerGroup().addTo(map),pinG=L.layerGroup().addTo(map);
-let mode=null,dp=[],tmp=null;
-
-function hit(fn){return e=>{if(mode)return;L.DomEvent.stop(e);fn()}}
+let mode=null,dp=[],tmp=null,tgt=null;
+const hit=fn=>e=>{if(mode)return;L.DomEvent.stop(e);fn()};
 function render(){
   zoneG.clearLayers();trkG.clearLayers();pinG.clearLayers();
-  if(db.zone)L.polygon(db.zone,{color:'#38bdf8',weight:3,dashArray:'10 6',fillOpacity:.04,interactive:false}).addTo(zoneG);
-  db.tracks.forEach(t=>{
-    const s=ST[t.status],todo=t.status==='todo';
-    const o={color:s.c,weight:t.kind==='line'?6:3,opacity:.95,dashArray:todo?'8 8':null};
-    const l=t.kind==='line'?L.polyline(t.pts,o):L.polygon(t.pts,Object.assign(o,{fillColor:s.c,fillOpacity:todo?.08:.3}));
-    l.on('click',hit(()=>trackForm(t))).addTo(trkG);
+  if(db.zone&&!db.zone.del)L.polygon(db.zone.pts,{color:'#38bdf8',weight:3,dashArray:'10 6',fillOpacity:.04,interactive:false}).addTo(zoneG);
+  live(db.vie).forEach(v=>{
+    if(!v.shape)return;
+    const s=vst(v),c=ST[s].c,o={color:c,weight:v.shape.kind==='line'?6:3,opacity:.95,dashArray:s==='todo'?'8 8':null};
+    (v.shape.kind==='line'?L.polyline(v.shape.pts,o):L.polygon(v.shape.pts,Object.assign(o,{fillColor:c,fillOpacity:.25}))).on('click',hit(()=>viaSheet(v.id))).addTo(trkG);
   });
-  db.pins.forEach(p=>{
+  live(db.pins).forEach(p=>{
     const T=TYPES[p.type];
-    L.marker([p.lat,p.lng],{icon:L.divIcon({className:'',html:'<div class="pin" style="background:'+T.c+'"><i>'+T.ic+'</i></div>',iconSize:[36,36],iconAnchor:[18,34]})})
-      .on('click',hit(()=>pinForm(p))).addTo(pinG);
+    L.marker([p.lat,p.lng],{icon:L.divIcon({className:'',html:'<div class="pin" style="background:'+T.c+'"><i>'+T.ic+'</i></div>',iconSize:[36,36],iconAnchor:[18,34]})}).on('click',hit(()=>pinForm(p))).addTo(pinG);
   });
 }
 function setMode(m){
   mode=(m===mode)?null:m;dp=[];
   if(tmp){map.removeLayer(tmp);tmp=null}
   $('#bar').style.display=mode?'flex':'none';
-  document.querySelectorAll('.tb[data-m]').forEach(b=>b.classList.toggle('act',b.dataset.m===mode));
+  $$('.tb[data-m]').forEach(b=>b.classList.toggle('act',b.dataset.m===mode));
   if(mode){
-    $('#hint').textContent={zone:'Tocca i punti del confine della tua zona',line:'Tocca i punti lungo la via che hai fatto',area:'Tocca gli angoli dell’area o del condominio',pin:'Tocca la mappa dove mettere il pin'}[mode];
+    $('#hint').textContent={zone:'Tocca i punti del confine della tua zona',line:'Tocca i punti lungo la via, sulla mappa',pin:'Tocca la mappa dove mettere il pin'}[mode];
     const pin=mode==='pin';
     $('#undo').style.display=pin?'none':'';$('#done').style.display=pin?'none':'';$('#gps').style.display=pin?'':'none';
   }
@@ -202,9 +250,9 @@ map.on('click',e=>{
   if(mode==='pin'){pinForm({lat:e.latlng.lat,lng:e.latlng.lng});return}
   dp.push([e.latlng.lat,e.latlng.lng]);drawTmp();
 });
-document.querySelectorAll('.tb[data-m]').forEach(b=>b.onclick=()=>{
-  if(b.dataset.m==='zone'&&db.zone&&mode!=='zone'){zoneSheet();return}
-  if(mode&&mode!==b.dataset.m){mode=null}
+$$('.tb[data-m]').forEach(b=>b.onclick=()=>{
+  if(b.dataset.m==='zone'&&db.zone&&!db.zone.del&&mode!=='zone'){zoneSheet();return}
+  if(mode&&mode!==b.dataset.m)mode=null;
   setMode(b.dataset.m);
 });
 $('#x').onclick=()=>{mode=null;setMode(null)};
@@ -212,15 +260,14 @@ $('#undo').onclick=()=>{dp.pop();drawTmp()};
 $('#done').onclick=()=>{
   const min=mode==='line'?2:3;
   if(dp.length<min)return toast('Servono almeno '+min+' punti');
-  if(mode==='zone'){db.zone=dp.slice();save();const m=mode;mode=null;setMode(null);render();toast('Zona salvata');return}
-  trackForm({kind:mode,pts:dp.slice(),status:'done',name:''});
+  if(mode==='zone'){db.zone={id:'zona',pts:dp.slice()};put('zona',db.zone);mode=null;setMode(null);render();toast('Zona salvata');return}
+  const v=db.vie.find(x=>x.id===tgt);v.shape={kind:'line',pts:dp.slice()};put('via',v);
+  mode=null;setMode(null);render();viaSheet(v.id);
 };
 $('#gps').onclick=()=>{
   if(!navigator.geolocation)return toast('GPS non disponibile');
   navigator.geolocation.getCurrentPosition(p=>pinForm({lat:p.coords.latitude,lng:p.coords.longitude}),()=>toast('Posizione non disponibile: controlla i permessi'),{enableHighAccuracy:true,timeout:15000});
 };
-
-/* ---------- GPS LIVE ---------- */
 let wid=null,me=null,acc=null;
 function stopLoc(){if(wid!=null)navigator.geolocation.clearWatch(wid);wid=null;if(me){map.removeLayer(me);map.removeLayer(acc);me=acc=null}$('#loc').classList.remove('act')}
 $('#loc').onclick=()=>{
@@ -238,7 +285,7 @@ $('#loc').onclick=()=>{
 };
 
 /* ---------- SCHEDE ---------- */
-function openSheet(h){$('#sheet').innerHTML='<div class="grab"></div>'+h;$('#sheet').style.display='block';$('#bd').style.display='block';$('#sheet').scrollTop=0}
+function openSheet(h,keep){const s=$('#sheet'),y=s.scrollTop;s.innerHTML='<div class="grab"></div>'+h;s.style.display='block';$('#bd').style.display='block';s.scrollTop=keep?y:0}
 function closeSheet(){$('#sheet').style.display='none';$('#bd').style.display='none'}
 $('#bd').onclick=closeSheet;
 const chips=(g,o,cur)=>'<div class="chips" data-g="'+g+'">'+Object.keys(o).map(k=>'<button class="chip'+(k===cur?' on':'')+'" data-v="'+k+'">'+o[k].ic+' '+o[k].n+'</button>').join('')+'</div>';
@@ -251,20 +298,23 @@ document.addEventListener('click',e=>{
 });
 function showFields(){
   const t=gv('type'),ok=SHOW[t];
-  document.querySelectorAll('#sheet .f').forEach(f=>f.style.display=ok.indexOf(f.dataset.k)>-1?'':'none');
+  $$('#sheet .f').forEach(f=>{if(f.dataset.k)f.style.display=ok.indexOf(f.dataset.k)>-1?'':'none'});
   $('#f_note').placeholder=PH[t];
 }
-function goMap(lat,lng){closeSheet();go('map');map.setView([lat,lng],18)}
+function zoneSheet(){
+  openSheet('<h3>Zona di competenza</h3><div class="btns"><button class="b" id="z-go">Inquadra la zona</button></div><div class="btns"><button class="b" id="z-re">Ridisegna</button><button class="b d" id="z-del">Elimina</button></div>');
+  $('#z-go').onclick=()=>{closeSheet();map.fitBounds(L.polygon(db.zone.pts).getBounds(),{padding:[30,30]})};
+  $('#z-re').onclick=()=>{closeSheet();mode=null;setMode('zone')};
+  $('#z-del').onclick=()=>{if(confirm('Eliminare la zona?')){db.zone.del=1;put('zona',db.zone);closeSheet();render()}};
+}
 
+/* ---------- PIN ---------- */
 function pinForm(p){
   const t=p.type||'contatto';
-  const inp=(k,l,extra)=>'<div class="f" data-k="'+k+'"><label>'+l+'</label><input id="f_'+k+'" value="'+esc(p[k])+'" '+(extra||'')+'></div>';
+  const inp=(k,l,x)=>'<div class="f" data-k="'+k+'"><label>'+l+'</label><input id="f_'+k+'" value="'+esc(p[k])+'" '+(x||'')+'></div>';
   openSheet(
-    '<h3>'+(p.id?'Modifica pin':'Nuovo pin')+'</h3>'+
-    chips('type',TYPES,t)+
-    inp('nome','Nome')+inp('cognome','Cognome')+
-    inp('tel','Telefono','type="tel" inputmode="tel"')+
-    inp('ind','Indirizzo e civico')+
+    '<h3>'+(p.id?'Modifica pin':'Nuovo pin')+'</h3>'+chips('type',TYPES,t)+
+    inp('nome','Nome')+inp('cognome','Cognome')+inp('tel','Telefono','type="tel" inputmode="tel"')+inp('ind','Indirizzo e civico')+
     '<div class="f" data-k="ven"><label>Chi vende</label><select id="f_ven"><option value="">—</option><option'+(p.ven==='Privato'?' selected':'')+'>Privato</option><option'+(p.ven==='Agenzia concorrente'?' selected':'')+'>Agenzia concorrente</option></select></div>'+
     '<div class="f" data-k="note"><label>Note</label><textarea id="f_note" rows="6">'+esc(p.note)+'</textarea></div>'+
     '<div class="btns"><button class="b p" id="s-ok">Salva</button></div>'+
@@ -272,55 +322,111 @@ function pinForm(p){
   );
   showFields();
   $('#s-ok').onclick=()=>{
-    const o=Object.assign({},p,{type:gv('type')});
-    ['nome','cognome','tel','ind','note'].forEach(k=>o[k]=$('#f_'+k).value.trim());
-    o.ven=$('#f_ven').value;
-    if(p.id)db.pins=db.pins.map(x=>x.id===p.id?o:x);
-    else{o.id=uid();o.created=new Date().toISOString();db.pins.push(o)}
-    save();closeSheet();if(mode)setMode(mode);render();renderList();toast('Pin salvato');
+    let o=p.id?p:{id:uid(),created:new Date().toISOString(),lat:p.lat,lng:p.lng};
+    o.type=gv('type');['nome','cognome','tel','ind','note'].forEach(k=>o[k]=$('#f_'+k).value.trim());o.ven=$('#f_ven').value;
+    if(!p.id)db.pins.push(o);
+    put('pin',o);closeSheet();if(mode)setMode(mode);render();renderList();toast('Pin salvato');
   };
   if(p.id){
-    $('#s-map').onclick=()=>goMap(p.lat,p.lng);
-    $('#s-del').onclick=()=>{if(confirm('Eliminare questo pin?')){db.pins=db.pins.filter(x=>x.id!==p.id);save();closeSheet();render();renderList()}};
+    $('#s-map').onclick=()=>{closeSheet();go('map');map.setView([p.lat,p.lng],18)};
+    $('#s-del').onclick=()=>{if(confirm('Eliminare questo pin?')){p.del=1;put('pin',p);closeSheet();render();renderList()}};
   }else $('#s-no').onclick=closeSheet;
 }
 
-function trackForm(t){
-  const nw=!t.id,kn=t.kind==='line'?'Via':'Area';
+/* ---------- VIE E CIVICI ---------- */
+const nums=v=>{const r=[],a=+v.da,b=+v.a;if(a>0&&b>=a)for(let i=a;i<=b&&i<=999;i++){if((v.lato==='p'&&i%2)||(v.lato==='d'&&!(i%2)))continue;r.push(String(i))}return r};
+const keys=v=>{const s=new Set(nums(v));Object.keys(v.done).forEach(k=>s.add(k));return[...s].sort((x,y)=>parseInt(x)-parseInt(y)||(x<y?-1:1))};
+const dn=v=>keys(v).filter(k=>v.done[k]).length;
+const vst=v=>{const n=nums(v);if(!n.length)return dn(v)&&(v.st||'todo')==='todo'?'doing':(v.st||'todo');const d=n.filter(k=>v.done[k]).length;return d===0?'todo':d===n.length?'done':'doing'};
+const lastMs=v=>Math.max(0,...Object.values(v.done),v.last?+new Date(v.last):0);
+function miss(v){
+  const o=[];let s=null,p=null;
+  const fl=()=>{if(s!==null){o.push(s===p?s:s+'–'+p);s=null}};
+  keys(v).forEach(k=>{if(!v.done[k]){if(s===null)s=k;p=k}else fl()});fl();
+  return o;
+}
+function viaSheet(id,keep){
+  const v=db.vie.find(x=>x.id===id);if(!v)return;
+  const ks=keys(v),m=miss(v),d=dn(v),has=nums(v).length>0,st=vst(v);
+  const notes=live(db.app).filter(a=>a.via===id).sort((a,b)=>b.created.localeCompare(a.created));
+  const lt=['t','p','d'].map((x,i)=>'<option value="'+x+'"'+(v.lato===x?' selected':'')+'>'+['Tutti','Solo pari','Solo dispari'][i]+'</option>').join('');
   openSheet(
-    '<h3>'+(nw?'Nuova '+kn.toLowerCase():kn)+'</h3>'+
-    '<div class="f"><label>Nome (via, civico, condominio)</label><input id="f_name" value="'+esc(t.name)+'"></div>'+
-    '<div class="f"><label>Stato</label>'+chips('status',ST,t.status)+'</div>'+
-    (nw?'':'<p style="color:var(--mu);margin:0 0 12px">Ultimo passaggio: '+fmt(t.last)+'</p>')+
-    '<div class="btns"><button class="b p" id="s-ok">Salva</button></div>'+
-    '<div class="btns">'+(nw?'<button class="b" id="s-no">Annulla</button>':'<button class="b" id="s-now">Passaggio adesso</button><button class="b" id="s-map">Vedi</button><button class="b d" id="s-del">Elimina</button>')+'</div>'
+    '<h3>'+ST[st].ic+' '+esc(v.name)+'</h3>'+
+    '<div class="f"><label>Nome via</label><input id="v_n" value="'+esc(v.name)+'"></div>'+
+    '<div class="f"><label>Civici della via, dal… al… (serve per sapere cosa manca)</label><div class="r3"><input id="v_da" type="number" inputmode="numeric" placeholder="dal" value="'+esc(v.da)+'"><input id="v_a" type="number" inputmode="numeric" placeholder="al" value="'+esc(v.a)+'"><select id="v_l">'+lt+'</select></div></div>'+
+    '<div class="sum">'+(has?'Fatti <b>'+d+'</b> su '+ks.length+(m.length?'<br>Mancano: <b>'+m.join(', ')+'</b>':'<br>✅ Via completa'):'Civici segnati: <b>'+d+'</b>')+'<br><small style="color:var(--mu)">Ultimo passaggio: '+fmt(lastMs(v)||null)+'</small></div>'+
+    '<div class="f"><label>Ho fatto dal civico… al civico…</label><div class="r3"><input id="r_x" type="number" inputmode="numeric" placeholder="dal"><input id="r_y" type="number" inputmode="numeric" placeholder="al"><button class="b p" id="r_go">Segna</button></div></div>'+
+    (ks.length?'<div class="f"><label>Oppure tocca i singoli civici</label><div class="grid">'+ks.map(k=>'<button class="cv'+(v.done[k]?' on':'')+'" data-k="'+esc(k)+'">'+esc(k)+'</button>').join('')+'</div></div>':'')+
+    '<div class="r3"><input id="x_k" placeholder="Altro civico, es. 12/A"><button class="b" id="x_go" style="flex:none;padding:0 18px">+</button></div>'+
+    (has?'':'<div class="f"><label>Stato della via</label>'+chips('vst',ST,v.st||'todo')+'</div>')+
+    '<div class="f"><label>Appunti su questa via</label>'+(notes.length?notes.slice(0,6).map(a=>'<div class="nt" data-a="'+a.id+'"><b>'+ESI[a.esito||'parlato'].ic+' '+esc([a.civ,a.nome].filter(Boolean).join(' · ')||'Appunto')+'</b><small>'+fmt(a.created)+'</small><span>'+esc(a.testo)+'</span></div>').join(''):'<small style="color:var(--mu)">Nessun appunto</small>')+'</div>'+
+    '<div class="btns"><button class="b p" id="v_app">+ Appunto</button><button class="b" id="v_dr">'+(v.shape?'Ridisegna':'Disegna')+' sulla mappa</button></div>'+
+    '<div class="btns">'+(v.shape?'<button class="b" id="v_map">Vedi sulla mappa</button>':'')+'<button class="b d" id="v_del">Elimina via</button></div>',keep
   );
-  const put=(now)=>{
-    const st=gv('status'),o=Object.assign({},t,{name:$('#f_name').value.trim(),status:st});
-    if(nw||now||st!==t.status)o.last=new Date().toISOString();
-    if(nw){o.id=uid();db.tracks.push(o)}else db.tracks=db.tracks.map(x=>x.id===t.id?o:x);
-    save();closeSheet();if(nw){mode=null;setMode(null)}render();renderList();toast(now?'Passaggio registrato':'Salvato');
+  const upd=()=>{put('via',v);render();renderVie();viaSheet(id,1)};
+  $('#v_n').onchange=e=>{v.name=e.target.value.trim()||v.name;put('via',v);renderVie();render()};
+  $('#v_da').onchange=e=>{v.da=e.target.value;upd()};
+  $('#v_a').onchange=e=>{v.a=e.target.value;upd()};
+  $('#v_l').onchange=e=>{v.lato=e.target.value;upd()};
+  $$('#sheet .cv').forEach(b=>b.onclick=()=>{const k=b.dataset.k;if(v.done[k])delete v.done[k];else v.done[k]=Date.now();upd()});
+  $('#r_go').onclick=()=>{
+    const x=parseInt($('#r_x').value),y=parseInt($('#r_y').value)||x;
+    if(!x||y<x)return toast('Scrivi da che civico a che civico');
+    for(let i=x;i<=y&&i<=999;i++){if((v.lato==='p'&&i%2)||(v.lato==='d'&&!(i%2)))continue;v.done[String(i)]=Date.now()}
+    upd();toast('Segnati i civici '+x+'–'+y);
   };
-  $('#s-ok').onclick=()=>put(false);
-  if(nw)$('#s-no').onclick=closeSheet;
-  else{
-    $('#s-now').onclick=()=>put(true);
-    $('#s-map').onclick=()=>{closeSheet();go('map');map.fitBounds(L.polyline(t.pts).getBounds(),{padding:[40,40]})};
-    $('#s-del').onclick=()=>{if(confirm('Eliminare?')){db.tracks=db.tracks.filter(x=>x.id!==t.id);save();closeSheet();render();renderList()}};
-  }
+  $('#x_go').onclick=()=>{const k=$('#x_k').value.trim();if(!k)return;v.done[k]=Date.now();upd()};
+  $$('#sheet [data-g=vst] .chip').forEach(c=>c.onclick=()=>{v.st=c.dataset.v;upd()});
+  $$('#sheet .nt').forEach(n=>n.onclick=()=>appForm(Object.assign({},db.app.find(a=>a.id===n.dataset.a),{back:id})));
+  $('#v_app').onclick=()=>appForm({via:id,back:id});
+  $('#v_dr').onclick=()=>{closeSheet();tgt=id;mode=null;go('map');setMode('line')};
+  if(v.shape)$('#v_map').onclick=()=>{closeSheet();go('map');map.fitBounds(L.polyline(v.shape.pts).getBounds(),{padding:[40,40]})};
+  $('#v_del').onclick=()=>{if(confirm('Eliminare questa via e i suoi civici?')){v.del=1;put('via',v);closeSheet();render();renderVie()}};
 }
-function zoneSheet(){
-  openSheet('<h3>Zona di competenza</h3><div class="btns"><button class="b" id="z-go">Inquadra la zona</button></div><div class="btns"><button class="b" id="z-re">Ridisegna</button><button class="b d" id="z-del">Elimina</button></div>');
-  $('#z-go').onclick=()=>{closeSheet();map.fitBounds(L.polygon(db.zone).getBounds(),{padding:[30,30]})};
-  $('#z-re').onclick=()=>{closeSheet();db.zone=null;save();render();mode=null;setMode('zone')};
-  $('#z-del').onclick=()=>{if(confirm('Eliminare la zona?')){db.zone=null;save();closeSheet();render()}};
+$('#newvia').onclick=()=>{
+  const n=(prompt('Nome della via')||'').trim();if(!n)return;
+  const v={id:uid(),name:n,da:'',a:'',lato:'t',done:{},st:'todo',shape:null};
+  db.vie.push(v);put('via',v);renderVie();viaSheet(v.id);
+};
+function renderVie(){
+  const L2=live(db.vie).sort((a,b)=>lastMs(b)-lastMs(a));
+  $('#vie').innerHTML=L2.length?L2.map(v=>{
+    const s=vst(v),n=nums(v).length,d=n?nums(v).filter(k=>v.done[k]).length:dn(v),m=miss(v);
+    return '<div class="it" data-id="'+v.id+'"><div class="ico" style="background:'+ST[s].c+'33">'+ST[s].ic+'</div><div class="tx"><b>'+esc(v.name)+'</b>'+(n?'<div class="bar"><i style="width:'+Math.round(d/n*100)+'%;background:'+ST[s].c+'"></i></div><small>'+d+'/'+n+(m.length&&s!=='todo'?' · mancano '+esc(m.join(', ')):'')+'</small>':'<small>'+d+' civici segnati</small>')+'<small>'+fmt(lastMs(v)||null)+'</small></div></div>';
+  }).join(''):'<div class="empty">Nessuna via. Tocca “+ Nuova via” per iniziare.</div>';
 }
+$('#vie').onclick=e=>{const r=e.target.closest('.it');if(r)viaSheet(r.dataset.id)};
+
+/* ---------- APPUNTI ---------- */
+function appForm(a){
+  const nw=!a.id;
+  const opts='<option value="">— nessuna via —</option>'+live(db.vie).map(v=>'<option value="'+v.id+'"'+(v.id===a.via?' selected':'')+'>'+esc(v.name)+'</option>').join('');
+  openSheet(
+    '<h3>'+(nw?'Nuovo appunto':'Appunto')+'</h3>'+
+    '<div class="f"><label>Via</label><select id="a_v">'+opts+'</select></div>'+
+    '<div class="r3"><input id="a_c" placeholder="Civico" value="'+esc(a.civ)+'"><input id="a_n" placeholder="Con chi hai parlato" value="'+esc(a.nome)+'"></div>'+
+    chips('esito',ESI,a.esito||'parlato')+
+    '<div class="f"><textarea id="a_t" rows="5" placeholder="Cosa vi siete detti, cosa è importante ricordare…">'+esc(a.testo)+'</textarea></div>'+
+    '<div class="btns"><button class="b p" id="s-ok">Salva</button></div>'+
+    '<div class="btns">'+(nw?'<button class="b" id="s-no">Annulla</button>':'<button class="b d" id="s-del">Elimina</button>')+'</div>'
+  );
+  const back=()=>{if(a.back)viaSheet(a.back);else closeSheet();renderList();renderVie()};
+  $('#s-ok').onclick=()=>{
+    const o=nw?{id:uid(),created:new Date().toISOString()}:db.app.find(x=>x.id===a.id);
+    o.via=$('#a_v').value;o.civ=$('#a_c').value.trim();o.nome=$('#a_n').value.trim();o.esito=gv('esito');o.testo=$('#a_t').value.trim();
+    if(nw)db.app.push(o);put('app',o);back();toast('Appunto salvato');
+  };
+  if(nw)$('#s-no').onclick=back;
+  else $('#s-del').onclick=()=>{if(confirm('Eliminare questo appunto?')){const o=db.app.find(x=>x.id===a.id);o.del=1;put('app',o);back()}};
+}
+$('#newapp').onclick=()=>appForm({});
 
 /* ---------- LISTA ---------- */
+const vname=id=>{const v=db.vie.find(x=>x.id===id&&!x.del);return v?v.name:''};
 function items(){
   const out=[];
-  db.pins.forEach(p=>out.push({k:'pin',o:p,type:p.type,d:p.created,hay:[p.nome,p.cognome,p.tel,p.ind,p.note,p.ven].join(' ')}));
-  db.tracks.forEach(t=>out.push({k:'trk',o:t,type:'via',d:t.last,hay:[t.name,ST[t.status].n].join(' ')}));
+  live(db.pins).forEach(p=>out.push({k:'pin',o:p,type:p.type,d:p.created,hay:[p.nome,p.cognome,p.tel,p.ind,p.note,p.ven].join(' ')}));
+  live(db.app).forEach(a=>out.push({k:'app',o:a,type:'app',d:a.created,hay:[vname(a.via),a.civ,a.nome,a.testo].join(' ')}));
   return out.sort((a,b)=>(b.d||'').localeCompare(a.d||''));
 }
 function renderList(){
@@ -330,31 +436,31 @@ function renderList(){
   $('#items').innerHTML=L2.length?L2.map(i=>{
     const o=i.o;let ic,col,ti,su;
     if(i.k==='pin'){const T=TYPES[o.type];ic=T.ic;col=T.c;ti=[o.nome,o.cognome].join(' ').trim()||o.ind||T.n;su=(o.nome||o.cognome)?o.ind||o.note:o.note}
-    else{const s=ST[o.status];ic=o.kind==='line'?'🛣️':'⬠';col=s.c;ti=o.name||(o.kind==='line'?'Via senza nome':'Area senza nome');su=s.n}
+    else{const E=ESI[o.esito||'parlato'];ic=E.ic;col='#38bdf8';ti=[vname(o.via),o.civ].filter(Boolean).join(' ')||o.nome||'Appunto';su=[o.nome,o.testo].filter(Boolean).join(' · ')}
     return '<div class="it" data-k="'+i.k+'" data-id="'+o.id+'"><div class="ico" style="background:'+col+'33">'+ic+'</div><div class="tx"><b>'+esc(ti)+'</b><small>'+esc(su)+'</small><small>'+fmt(i.d)+'</small></div>'+(o.tel?'<a class="call" href="tel:'+esc(o.tel.replace(/[^\d+]/g,''))+'">📞</a>':'')+'</div>';
-  }).join(''):'<div class="empty">Nessun risultato. Aggiungi pin o vie dalla mappa.</div>';
+  }).join(''):'<div class="empty">Nessun risultato.</div>';
 }
 $('#items').onclick=e=>{
   if(e.target.closest('a'))return;
   const r=e.target.closest('.it');if(!r)return;
   if(r.dataset.k==='pin')pinForm(db.pins.find(x=>x.id===r.dataset.id));
-  else trackForm(db.tracks.find(x=>x.id===r.dataset.id));
+  else appForm(Object.assign({},db.app.find(x=>x.id===r.dataset.id)));
 };
 $('#q').oninput=renderList;$('#dt').onchange=renderList;
 
 /* ---------- DATI ---------- */
 function renderData(){
-  $('#stat').innerHTML='<div><b>'+db.pins.filter(p=>p.type==='contatto').length+'</b>contatti</div><div><b>'+db.pins.length+'</b>pin</div><div><b>'+db.tracks.length+'</b>vie e aree</div>';
+  $('#stat').innerHTML='<div><b>'+live(db.pins).length+'</b>pin</div><div><b>'+live(db.vie).length+'</b>vie</div><div><b>'+live(db.app).length+'</b>appunti</div>';
   $('#dmb').textContent='Mappa scura: '+(db.dark?'sì':'no');
+  $('#syn').textContent='Stato: '+syn+(ss?' · codice '+ss.code:'');
 }
 function dl(name,txt,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:mime}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1500)}
 const stamp=()=>new Date().toISOString().slice(0,10);
 $('#ex-json').onclick=()=>dl('zona-backup-'+stamp()+'.json',JSON.stringify(db,null,1),'application/json');
 $('#ex-csv').onclick=()=>{
-  const cols=['tipo','nome','cognome','telefono','indirizzo','venditore','note','lat','lng','data'];
   const c=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
-  const rows=db.pins.map(p=>[TYPES[p.type].n,p.nome,p.cognome,p.tel,p.ind,p.ven,p.note,p.lat,p.lng,p.created].map(c).join(','));
-  dl('pin-'+stamp()+'.csv','\ufeff'+cols.join(',')+'\n'+rows.join('\n'),'text/csv');
+  const rows=live(db.pins).map(p=>[TYPES[p.type].n,p.nome,p.cognome,p.tel,p.ind,p.ven,p.note,p.lat,p.lng,p.created].map(c).join(','));
+  dl('pin-'+stamp()+'.csv','\ufeff'+['tipo','nome','cognome','telefono','indirizzo','venditore','note','lat','lng','data'].join(',')+'\n'+rows.join('\n'),'text/csv');
 };
 $('#im').onclick=()=>$('#file').click();
 $('#file').onchange=e=>{
@@ -362,28 +468,28 @@ $('#file').onchange=e=>{
   const r=new FileReader();
   r.onload=()=>{try{
     const d=JSON.parse(r.result);
-    if(!Array.isArray(d.pins)||!Array.isArray(d.tracks))throw 0;
+    if(!Array.isArray(d.pins))throw 0;
     if(!confirm('Sostituire i dati attuali con quelli del file?'))return;
-    db=Object.assign({zone:null,tracks:[],pins:[],dark:false},d);save();render();renderData();applyDark();toast('Dati importati')
+    db=mig(d);all().forEach(([t,o])=>put(t,o));base();render();renderVie();renderData();toast('Dati importati');
   }catch(x){toast('File non valido')}};
   r.readAsText(f);e.target.value='';
 };
-function applyDark(){document.body.classList.toggle('dm',!!db.dark)}
-$('#dmb').onclick=()=>{db.dark=!db.dark;save();applyDark();renderData()};
-$('#wipe').onclick=()=>{if(confirm('Cancellare TUTTI i dati? Esporta prima un backup.')){db={zone:null,tracks:[],pins:[],dark:db.dark};save();render();renderData();toast('Dati cancellati')}};
+$('#dmb').onclick=()=>{db.dark=!db.dark;save();document.body.classList.toggle('dm',db.dark);renderData()};
+$('#wipe').onclick=()=>{if(confirm('Cancellare TUTTI i dati, anche online? Esporta prima un backup.')){all().forEach(([t,o])=>{o.del=1;put(t,o)});render();renderVie();renderList();renderData();toast('Dati cancellati')}};
 
 /* ---------- NAVIGAZIONE ---------- */
 function go(v){
-  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));
-  document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  $$('.view').forEach(x=>x.classList.toggle('on',x.id==='v-'+v));
+  $$('nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
   if(v==='map')setTimeout(()=>map.invalidateSize(),50);
-  if(v==='list')renderList();if(v==='data')renderData();
+  if(v==='vie')renderVie();if(v==='list')renderList();if(v==='data')renderData();
 }
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+$$('nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
 
-applyDark();render();
-if(db.zone)map.fitBounds(L.polygon(db.zone).getBounds(),{padding:[30,30]});
-else if(db.pins.length)map.setView([db.pins[0].lat,db.pins[0].lng],16);
+document.body.classList.toggle('dm',!!db.dark);base();render();renderVie();
+if(db.zone&&!db.zone.del)map.fitBounds(L.polygon(db.zone.pts).getBounds(),{padding:[30,30]});
+else if(live(db.pins).length)map.setView([live(db.pins)[0].lat,live(db.pins)[0].lng],16);
+conn();
 </script>
 </body>
 </html>
